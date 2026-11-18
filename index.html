@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>随芯拍 · RallyMate</title>
+<style>
+*{box-sizing:border-box}body{margin:auto;max-width:850px;padding:clamp(20px,5vw,64px);background:#f4f5eb;color:#173f35;font:17px/1.65 system-ui,sans-serif}header{border-top:6px solid #265746}h1{font-size:clamp(40px,8vw,76px);letter-spacing:-.04em;margin:.35em 0 0}h2{font-size:24px}p{max-width:40em}section{margin:36px 0}article{background:#174837;color:white;border:2px solid #85a890;padding:22px;text-align:center;border-radius:12px}output{display:block;font:bold clamp(52px,12vw,100px)/1.4 system-ui;font-variant-numeric:tabular-nums}.teams{display:flex;justify-content:center;flex-wrap:wrap;gap:16px}button{font:inherit;border:0;border-radius:6px;margin:3px;padding:8px 12px;cursor:pointer;background:#f0f5de;color:#16392f}a{color:#1f6152}small{display:block;margin-top:12px}footer{margin:36px 0}
+</style>
+<header><h1>随芯拍</h1><strong>RallyMate · AI 羽毛球套件</strong><p>双击拍底记一分，三连击撤销。两位球员各用自己的球拍，在树莓派屏幕和手机上看同一场比分。</p></header>
+<section><h2>体验一回合</h2><p>用按钮代替敲击拍底。先让双方各得一分，再试试蓝方撤销。这个网页示例只允许撤销本方刚获得的最后一分。</p>
+<article><span>红方　／　蓝方</span><output id="score" aria-live="polite">0 : 0</output><div class="teams"><div><button data-side="red" data-taps="2">红方 +1</button><button data-side="red" data-taps="3">红方撤销</button></div><div><button data-side="blue" data-taps="2">蓝方 +1</button><button data-side="blue" data-taps="3">蓝方撤销</button></div></div><small id="feedback" role="status">等待第一分</small></article></section>
+<section><h2>球场上的一分如何同步</h2><p>拍底识别手势，通过 Wi-Fi 将计分事件交给树莓派。主机根据本场球员映射更新比分，服务器同步比赛记录，两台手机可以进入同一场比赛。</p></section>
+<section><h2>从回放问教练</h2><p>赛后可从比赛回放引用本场记录，向教练提问。例如“哪一段最值得回看？” 教练可以指出录像中出现连续变向的时间窗，让球员回到对应片段观察下一步启动。</p></section>
+<footer><a href="https://github.com/RallyMate-AI-Badminton-Kit/rallymate-showcase">查看计分示例源码</a></footer>
+<script type="module">
+import { Scoreboard } from './score.js';
+const board = new Scoreboard();
+let id = 0;
+for (const button of document.querySelectorAll('button')) {
+  button.onclick = () => {
+    const before = board.score.join(' : ');
+    const value = board.apply({id: String(++id), side: button.dataset.side, taps: Number(button.dataset.taps)}).join(' : ');
+    document.querySelector('#score').textContent = value;
+    document.querySelector('#feedback').textContent = before === value ? '本方没有可撤销的最后一分' : button.textContent;
+  };
+}
+</script></html>
